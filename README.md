@@ -4,7 +4,7 @@ Your conversational AI sports companion that tells you what to watch right now.
 
 > **🎯 The Problem:** You want to watch sports, but you don't know what's on or what's worth watching. Existing apps just show you schedules and scores - they don't understand what YOU want to watch right now.
 >
-> **💡 The Solution:** ESPN MCP turns Claude into your personal sports advisor. Have a conversation about what you're in the mood for, and get instant recommendations for the best games to watch - live right now or coming up soon.
+> **💡 The Solution:** Sport Suggest MCP turns Claude into your personal sports advisor. Have a conversation about what you're in the mood for, and get instant recommendations for the best games to watch - live right now or coming up soon.
 
 ## 🔥 What Makes This Different
 
@@ -15,51 +15,57 @@ Your conversational AI sports companion that tells you what to watch right now.
 - No understanding of what makes a game exciting
 - Can't personalize to your mood or preferences
 
-**ESPN MCP + Claude:**
+**Sport Suggest MCP + Claude:**
 
-- "Show me something exciting right now" → Claude finds close games, overtime, buzzer-beaters
-- "I want to watch a game with playoff implications" → Claude analyzes standings and recommends
-- "Find me a football game I can watch while working" → Claude suggests games early in the quarter
-- "What should I watch this weekend?" → Claude reviews upcoming matchups and suggests the best ones
+- "Show me something exciting right now" → Claude analyzes score differentials and time remaining to find nail-biters
+- "I want a high-scoring game" → Claude looks at pace and total points to suggest offensive shootouts
+- "Find me a competitive game" → Claude combines score, time remaining, and team quality to recommend
+- "What should I watch tonight?" → Claude reviews upcoming matchups and suggests the best ones
 
 ### Real Conversational Examples
 
 **Right Now Recommendations:**
 
 ```
-You: "I have 30 minutes, what should I watch?"
+You: "What's the most exciting NFL game on right now?"
 
-Claude: The Celtics-Lakers game is in the 4th quarter with 8 minutes
-left and it's a 5-point game. Perfect timing - you'll catch the
-entire finish. Plus it's a potential Finals preview.
+Claude: The Bengals-Jets game is your best bet - it's 38-32 with
+4:36 left in the 4th quarter. That's a 6-point game with enough
+time for a comeback, and the pace is insane at 17.5 points per
+quarter. Plus it's on CBS.
 ```
 
-**Future Planning:**
+**Style-Based Discovery:**
 
 ```
-You: "What NFL games this Sunday are worth watching?"
+You: "I want a defensive battle"
 
-Claude: Three games stand out:
-1. Chiefs vs Bills (3pm) - AFC Championship rematch, both fighting
-   for #1 seed
-2. Cowboys vs Eagles (7pm) - Division rivals, loser is likely out
-   of playoffs
-3. 49ers vs Seahawks (7pm) - Winner takes division lead
-
-Based on playoff implications, I'd prioritize Chiefs-Bills.
+Claude: The Bucs-Saints game is perfect for you. It's 7-3 in the
+3rd quarter with a pace of only 3.3 points per period. Both teams
+are struggling to move the ball, and the Superdome crowd is into it.
 ```
 
 **Mood-Based Discovery:**
 
 ```
-You: "I want to watch basketball but I'm tired of blowouts"
+You: "I'm new to basketball, what should I watch?"
 
-Claude: Right now there are 2 close games:
-- Heat vs Bucks: 98-95, 6min left in 4th
-- Nuggets vs Suns: Tied 103-103, 3min left in 4th
+Claude: I'd suggest the Lakers-Celtics game - it's a historic
+rivalry between two legendary franchises. LeBron James is having
+a monster game with 35 points, and it's close enough (8-point game)
+that you'll see competitive basketball without a blowout. Plus
+you'll learn about two of the best teams in the league.
+```
 
-The Nuggets-Suns game is more exciting - they've had 8 lead
-changes in the 4th quarter alone.
+**Player Performance Focus:**
+
+```
+You: "Any star performances happening right now?"
+
+Claude: Yes! In the Broncos-Cowboys game, RJ Harvey already has
+2 rushing touchdowns and Troy Franklin has 74 receiving yards and
+a TD. The Broncos are rolling, and Bo Nix is having a great game
+as a young QB. Worth tuning in to see the future stars.
 ```
 
 ## 🚀 Why This Doesn't Exist Yet
@@ -69,7 +75,7 @@ changes in the 4th quarter alone.
 - What games are on right now
 - Current scores and game situations
 - Real-time player performances
-- Playoff standings and implications
+- Game pace and momentum
 
 Apps like ESPN, Roku, and Samsung TV show you data, but they don't have conversations with you or understand your preferences in the moment.
 
@@ -77,97 +83,84 @@ Apps like ESPN, Roku, and Samsung TV show you data, but they don't have conversa
 
 ## 🛠️ How It Works
 
-Sport Suggest MCP provides Claude with three powerful tools:
+Sport Suggest MCP provides Claude with two powerful tools that return rich, structured data. Claude then analyzes this data conversationally to understand what YOU want to watch.
 
-### 1. `get_live_games` - Find What's Exciting Right Now
+### 1. `get_nfl_scores` - Live & Upcoming NFL Games
 
-Returns games currently in progress with smart filtering.
+Returns all live and upcoming NFL games with comprehensive context.
 
-**What makes it smart:**
+**Rich data includes:**
 
-- Filter by score differential (close games only)
-- Filter by game progress (4th quarter drama)
-- Includes context: team records, playoff positioning
-- TV broadcast info so you know where to watch
+- **Score & Momentum:** Current score, score differential, which team is leading
+- **Game State:** Quarter, time remaining, whether it's live or upcoming
+- **Player Performance:** Top QB (passing yards, TDs), top RB (rushing yards, TDs), top WR (receiving yards, TDs)
+- **Context:** Team records, venue, attendance, conference game flag
+- **Pace Metrics:** Points per period to identify offensive shootouts vs defensive battles
+- **Quarter-by-Quarter Scoring:** See how each team scored across all quarters
+- **Broadcast Info:** What channel to watch on
 
-**Example:** "Show me NBA games in crunch time" → Only returns games in the 4th quarter within 10 points
+**What Claude can answer with this:**
 
----
-
-### 2. `get_upcoming_games` - Plan Your Viewing
-
-Get games scheduled for today, tomorrow, or any future date.
-
-**What makes it smart:**
-
-- Identifies playoff implications automatically
-- Includes rivalry context and season series
-- Shows team form (last 5 games)
-- Highlights marquee matchups
-
-**Example:** "What college football games Saturday have the biggest stakes?" → Returns ranked matchups with College Football Playoff implications
+- "What's the closest game?" → Analyzes score differential + time remaining
+- "Show me a shootout" → Looks at pace (points per period) and total points
+- "Any star performances?" → Reviews top QB/RB/WR stats
+- "Find me a good team matchup" → Compares team records
+- "Where can I watch?" → Returns broadcast channel
 
 ---
 
-### 3. `get_game_details` - Deep Dive Analysis
+### 2. `get_nba_scores` - Live & Upcoming NBA Games
 
-Comprehensive breakdown of any specific game.
+Returns all live and upcoming NBA games with comprehensive context.
 
-**What makes it smart:**
+**Rich data includes:**
 
-- Live stats and momentum indicators
-- Key player performances
-- Recent play-by-play highlights
-- Injury reports
-- Head-to-head history
+- **Score & Momentum:** Current score, score differential, which team is leading
+- **Game State:** Quarter, time remaining, whether it's live or upcoming
+- **Player Performance:** Top scorer with full points/rebounds/assists stat line
+- **Context:** Team records, venue, attendance, conference game flag
+- **Pace Metrics:** Points per quarter to identify fast-paced vs slow-paced games
+- **Quarter-by-Quarter Scoring:** Track scoring trends across all quarters
+- **Broadcast Info:** What channel to watch on
 
-**Example:** "Tell me about the Cowboys game" → Full analysis with score, stats, storylines, and whether it's worth tuning in
+**What Claude can answer with this:**
 
-## 🎯 Perfect For These Scenarios
+- "Find me a close game" → Filters by score differential in late quarters
+- "Any triple-doubles happening?" → Reviews stat lines
+- "Show me a high-scoring game" → Analyzes pace and total points
+- "What's the best rivalry game?" → Combines team quality with competitiveness
+- "Where can I watch Lakers games?" → Returns broadcast info
 
-**"What should I watch right now?"**
+## 🎯 The Personalization Magic
 
-- Finds the most exciting live games based on score, time remaining, and stakes
-- Suggests multiple options if you have flexibility
+The key insight: **We don't hardcode recommendations.** Instead, we give Claude rich data and let it reason conversationally about what YOU want.
 
-**"What's on this weekend?"**
+### How Personalization Emerges Naturally:
 
-- Reviews all upcoming games and ranks by excitement factor
-- Considers rivalries, playoff implications, star players
+**User says:** "I want something exciting"  
+**Claude reasons:** _Score differential < 10 AND 4th quarter AND time remaining < 5 minutes = exciting_
 
-**"Find me a game I can put on in the background"**
+**User says:** "Find me a blowout to have on in the background"  
+**Claude reasons:** _Score differential > 20 AND early game = background viewing_
 
-- Suggests early-quarter games or blowouts you don't need to focus on
-- Or finds nail-biters that demand your full attention
+**User says:** "Show me a game with a star player going off"  
+**Claude reasons:** _Top scorer has 40+ points OR QB has 300+ yards and 3 TDs = star performance_
 
-**"I only care about [my team], what should I know?"**
+**User says:** "I want to watch good teams"  
+**Claude reasons:** _Both teams have winning records (>0.500) = quality matchup_
 
-- Tracks your team's games and playoff positioning
-- Alerts you to must-watch games
-
-**"I want to watch basketball but I'm not sure which game"**
-
-- Analyzes all live NBA games and suggests the best one
-- Explains WHY it's worth watching
+This approach is infinitely flexible - as your preferences evolve in the conversation, Claude adapts without any code changes.
 
 ## 🏗️ Project Structure
 
 ```
 sport-suggest-mcp/
 ├── src/
-│   ├── index.ts              # MCP server setup
-│   ├── tools/                # Tool implementations
-│   │   ├── get_live_games.ts
-│   │   ├── get_upcoming_games.ts
-│   │   └── get_game_details.ts
-│   ├── espn/                 # ESPN API client
-│   │   ├── client.ts
-│   │   └── types.ts
-│   └── utils/                # Helper functions
-│       ├── filters.ts
-│       └── formatters.ts
-├── package.json
-├── tsconfig.json
+│   └── sport_suggest_mcp/
+│       ├── __init__.py
+│       ├── server.py           # MCP server setup & tool registration
+│       └── tools.py            # get_nfl_scores & get_nba_scores implementations
+├── pyproject.toml              # Python project configuration
 └── README.md
 ```
 
@@ -175,24 +168,33 @@ sport-suggest-mcp/
 
 This project uses ESPN's unofficial public API (no API key required):
 
-```
-Live scores:
-http://site.api.espn.com/apis/site/v2/sports/{sport}/{league}/scoreboard
+**NFL Scoreboard:**
 
-Game details:
-http://site.api.espn.com/apis/site/v2/sports/{sport}/{league}/summary?event={gameId}
-
-Teams:
-http://site.api.espn.com/apis/site/v2/sports/{sport}/{league}/teams
 ```
+https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard
+```
+
+**NBA Scoreboard:**
+
+```
+https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard
+```
+
+**Data returned includes:**
+
+- Live scores and game status (quarter, time remaining)
+- Team information (names, records, abbreviations)
+- Statistical leaders (top performers for each team)
+- Venue and broadcast details
+- Quarter-by-quarter scoring breakdowns
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
+- Python 3.10+
 - Claude Desktop
-- Basic TypeScript knowledge
+- uv (Python package installer)
 
 ### Installation
 
@@ -201,11 +203,8 @@ http://site.api.espn.com/apis/site/v2/sports/{sport}/{league}/teams
 git clone https://github.com/yourusername/sport-suggest-mcp.git
 cd sport-suggest-mcp
 
-# Install dependencies
-npm install
-
-# Build the project
-npm run build
+# Install with uv
+uv pip install -e .
 ```
 
 ### Configuration
@@ -219,44 +218,90 @@ Add to your Claude Desktop config file:
 {
   "mcpServers": {
     "sport-suggest": {
-      "command": "node",
-      "args": ["/path/to/sport-suggest-mcp/build/index.js"]
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/ABSOLUTE/PATH/TO/sport-suggest-mcp",
+        "run",
+        "sport-suggest-mcp"
+      ]
     }
   }
 }
 ```
 
+**Important:** Replace `/ABSOLUTE/PATH/TO/sport-suggest-mcp` with the actual absolute path to your project directory.
+
 Restart Claude Desktop, and you're ready to start discovering games!
+
+## 💬 Example Queries to Try
+
+### Finding Games Right Now
+
+- "What NFL games are on right now?"
+- "Show me the most exciting NBA game"
+- "Find me a close football game"
+- "What's the highest scoring game on?"
+- "Any nail-biters happening?"
+
+### Style Preferences
+
+- "I want a defensive battle"
+- "Show me an offensive shootout"
+- "Find me a high-paced game"
+- "I want to watch a competitive game"
+
+### Player-Focused
+
+- "Any star performances happening?"
+- "Who's having a monster game?"
+- "Show me games with great QB play"
+- "Are there any players going off right now?"
+
+### Team-Based
+
+- "Should I watch the Cowboys game?"
+- "Show me games with winning teams"
+- "Find me a good matchup"
+- "Any rivalry games on?"
+
+### Upcoming Games
+
+- "What NFL games are coming up tonight?"
+- "What should I watch this weekend?"
+- "When does the Lakers game start?"
 
 ## 🗺️ Development Roadmap
 
-### Week 1: Core Discovery
+### ✅ Phase 1: Core Discovery (Complete)
 
-- [ ] Initialize MCP server project
-- [ ] Set up ESPN API client with error handling
-- [ ] Implement `get_live_games` with basic filtering
-- [ ] Test "what's on right now" queries
+- [x] MCP server setup with Python
+- [x] ESPN API client with NFL & NBA support
+- [x] `get_nfl_scores` with rich player/game data
+- [x] `get_nba_scores` with rich player/game data
+- [x] Filtering out completed games
+- [x] Real-time player performance tracking
 
-### Week 2: Smart Recommendations
+### 🚧 Phase 2: Enhanced Intelligence (In Progress)
 
-- [ ] Add score differential and quarter filters to `get_live_games`
-- [ ] Implement `get_upcoming_games` with date filtering
 - [ ] Add playoff implications detection
-- [ ] Test "what should I watch this weekend" queries
+- [ ] Team momentum indicators (recent win/loss streaks)
+- [ ] Injury impact analysis
+- [ ] Historical rivalry context
 
-### Week 3: Deep Analysis
+### 📅 Phase 3: Expanded Coverage
 
-- [ ] Implement `get_game_details` for comprehensive breakdowns
-- [ ] Add team form and head-to-head context
-- [ ] Refine data formatting for conversational responses
-- [ ] Test complex recommendation scenarios
+- [ ] Add NHL support
+- [ ] Add MLB support
+- [ ] Add college sports (NCAAF, NCAAB)
+- [ ] International soccer leagues
 
-### Week 4: Polish & Expand
+### 🔮 Phase 4: Advanced Features
 
-- [ ] Comprehensive error handling
-- [ ] Performance optimization
-- [ ] Add more leagues (NHL, MLB, NCAAB)
-- [ ] Documentation and examples
+- [ ] `get_game_details(game_id)` for deep-dive analysis
+- [ ] Play-by-play highlights for live games
+- [ ] Betting line integration
+- [ ] "Games like this" historical comparisons
 
 ## 🎓 Key Design Philosophy
 
@@ -264,57 +309,86 @@ Restart Claude Desktop, and you're ready to start discovering games!
 
 We don't build rigid recommendation algorithms. Instead:
 
-1. **We provide rich data** - scores, standings, team form, broadcast info
-2. **Claude analyzes conversationally** - "This game is close AND has playoff implications AND features two MVP candidates"
-3. **Recommendations feel natural** - like talking to a knowledgeable friend, not a database
+1. **We provide rich data** - scores, player stats, pace metrics, team records
+2. **Claude analyzes conversationally** - "This game is close AND has a high pace AND features star performers"
+3. **Recommendations feel natural** - like talking to a knowledgeable friend, not querying a database
 
-### Context is Everything
+### Data-Driven But Not Prescriptive
 
-Every game includes:
+Every game includes enough context for Claude to make intelligent recommendations:
 
-- **Stakes:** Playoff positioning, rivalry history, season series
-- **Narrative:** Team streaks, player milestones, coaching storylines
-- **Timing:** Quarter/inning, time remaining, momentum shifts
-- **Accessibility:** What channel, when it starts, how long it'll take
+- **Stakes:** Team records, conference games
+- **Style:** Pace metrics, scoring patterns, defensive vs offensive battles
+- **Talent:** Player performance leaders (QB/RB/WR for NFL, PTS/REB/AST for NBA)
+- **Timing:** Quarter/time remaining, halftime, upcoming
+- **Accessibility:** Broadcast channel, venue, attendance
 
-This lets Claude understand not just WHAT is happening, but WHY it matters.
+This lets Claude understand not just WHAT is happening, but WHY it matters to YOU.
 
 ### Personalization Through Conversation
 
-Instead of profile settings, preferences emerge naturally:
+Instead of profile settings, preferences emerge naturally through dialogue:
 
-- "I love defense" → Claude prioritizes low-scoring, tight games
+- "I love defense" → Claude prioritizes low-pace, close games
 - "I'm a casual fan" → Claude explains context and storylines
-- "I bet on this game" → Claude focuses on live scoring and momentum
 - "I only have 20 minutes" → Claude finds games in the 4th quarter
+- "Show me star power" → Claude highlights games with top statistical performances
 
 ## 📊 Success Metrics
 
 - ✅ Recommend a relevant game in <2 seconds
-- ✅ Understand conversational preferences ("exciting", "close", "important")
-- ✅ Handle 5+ different leagues reliably
+- ✅ Understand conversational preferences ("exciting", "close", "high-scoring")
+- ✅ Handle NFL and NBA reliably with live data
 - ✅ Gracefully explain when nothing interesting is on
 - ✅ Feel like talking to a knowledgeable sports friend
 
-## 🔮 Future Enhancements
+## 🔧 Technical Details
 
-**Phase 2 - Advanced Discovery:**
+### Why Python?
 
-- `get_player_stats` - "Is anyone having a monster game right now?"
-- `get_standings` - Deep playoff scenario analysis
-- Historical context - "Best game of the season so far"
-- Betting line integration - "Which games are not going as expected?"
+- Simple, readable code for sports data parsing
+- Excellent support for REST APIs via `requests`
+- Fast development iteration
+- Easy integration with MCP Python SDK
 
-**Phase 3 - Proactive Suggestions:**
+### Why Two Separate Tools?
 
-- "Heads up - the game you were watching is getting close again"
-- "That team you mentioned is playing in 30 minutes"
-- End-of-season scenarios - "Your team needs these 3 results to make playoffs"
+We initially considered a single `get_league_scores(league)` router function, but decided on separate `get_nfl_scores()` and `get_nba_scores()` tools because:
+
+1. **Simpler for Claude** - Direct function calls vs parameter passing
+2. **Sport-specific logic** - NFL uses QB/RB/WR leaders, NBA uses PTS/REB/AST
+3. **Easier to extend** - Add `get_mlb_scores()` later without touching existing code
+4. **Better performance** - No unnecessary routing layer
+
+### Data Parsing Strategy
+
+NFL and NBA have different API structures:
+
+**NFL:** Leaders at the competition level (shared across both teams)
+
+```python
+competition.get("leaders", [])  # Contains all players from both teams
+```
+
+**NBA:** Leaders at the team/competitor level (separated by team)
+
+```python
+away_team.get("leaders", [])  # Away team players
+home_team.get("leaders", [])  # Home team players
+```
+
+Our tool functions handle these differences internally, presenting clean, consistent data to Claude.
+
+## 🐛 Known Issues & Limitations
+
+- **Attendance data is unreliable** - ESPN doesn't always populate it, even for live games
+- **Halftime detection** - Some edge cases during halftime transitions
+- **Season stats vs game stats** - For upcoming games, API sometimes returns season totals instead of game stats (we filter these out)
 
 ## 📚 Resources
 
 - [MCP Documentation](https://modelcontextprotocol.io)
-- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
+- [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)
 - [ESPN API Unofficial Docs](https://gist.github.com/akeaswaran/b48b02f1c94f873c6655e7129910fc3b)
 
 ## 📝 License
@@ -323,17 +397,22 @@ MIT
 
 ## 🤝 Contributing
 
-Contributions welcome! This is a learning project, but if you have ideas for making sports discovery even better, open an issue or PR.
+Contributions welcome! This is a learning project exploring the intersection of AI and sports discovery.
 
 **Ideas we'd love help with:**
 
-- Additional sports (soccer, hockey, baseball)
-- Better playoff implications detection
+- Additional sports (MLB, NHL, soccer)
+- Better playoff implications detection using standings data
 - Injury impact analysis
 - Historical "games like this" comparisons
+- Team momentum indicators (hot/cold streaks)
 
 ## 🙏 Acknowledgments
 
 - Anthropic for creating MCP and Claude
 - ESPN for providing public API access
 - Sports fans everywhere who just want to know what to watch
+
+---
+
+**Built with ❤️ for sports fans who value their time**
