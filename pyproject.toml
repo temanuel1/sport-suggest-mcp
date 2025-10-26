@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sport-suggest-mcp"
+version = "0.1.0"
+description = "Python MCP server that recommends sports games to watch"
+authors = [{name = "Tyler Emanuel"}]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.0.0",
+    "anthropic>=0.40.0",
+    "python-dotenv>=1.0.0",
+    "requests>=2.31.0"
+]
+
+[project.scripts]
+sport-suggest-mcp = "sport_suggest_mcp.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sport_suggest_mcp"]
