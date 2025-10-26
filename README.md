@@ -21,6 +21,7 @@ Your conversational AI sports companion that tells you what to watch right now.
 - "I want a high-scoring game" → Claude looks at pace and total points to suggest offensive shootouts
 - "Find me a competitive game" → Claude combines score, time remaining, and team quality to recommend
 - "What should I watch tonight?" → Claude reviews upcoming matchups and suggests the best ones
+- "Which game has the best players?" → Claude checks **current rosters** to find star-studded matchups
 
 ### Real Conversational Examples
 
@@ -35,6 +36,17 @@ time for a comeback, and the pace is insane at 17.5 points per
 quarter. Plus it's on CBS.
 ```
 
+**Star Player Discovery:**
+
+```
+You: "Which NBA game should I watch if I want to see some star players?"
+
+Claude: [Checks current rosters] The Bucks @ Cavaliers game has the
+most star power right now. Giannis Antetokounmpo (2x MVP) is going
+up against Donovan Mitchell and the Cavaliers. Both teams are
+playing well and it's a close game at halftime (65-56).
+```
+
 **Style-Based Discovery:**
 
 ```
@@ -45,27 +57,14 @@ Claude: The Bucs-Saints game is perfect for you. It's 7-3 in the
 are struggling to move the ball, and the Superdome crowd is into it.
 ```
 
-**Mood-Based Discovery:**
-
-```
-You: "I'm new to basketball, what should I watch?"
-
-Claude: I'd suggest the Lakers-Celtics game - it's a historic
-rivalry between two legendary franchises. LeBron James is having
-a monster game with 35 points, and it's close enough (8-point game)
-that you'll see competitive basketball without a blowout. Plus
-you'll learn about two of the best teams in the league.
-```
-
 **Player Performance Focus:**
 
 ```
 You: "Any star performances happening right now?"
 
-Claude: Yes! In the Broncos-Cowboys game, RJ Harvey already has
-2 rushing touchdowns and Troy Franklin has 74 receiving yards and
-a TD. The Broncos are rolling, and Bo Nix is having a great game
-as a young QB. Worth tuning in to see the future stars.
+Claude: Yes! LaMelo Ball is putting on a show with 23 points already
+and it's only the 2nd quarter. The Hornets are down 60-51 to the
+Wizards but Ball is keeping them in it with his scoring and playmaking.
 ```
 
 ## 🚀 Why This Doesn't Exist Yet
@@ -76,6 +75,7 @@ as a young QB. Worth tuning in to see the future stars.
 - Current scores and game situations
 - Real-time player performances
 - Game pace and momentum
+- Which players are on which teams (due to trades and roster moves)
 
 Apps like ESPN, Roku, and Samsung TV show you data, but they don't have conversations with you or understand your preferences in the moment.
 
@@ -83,7 +83,7 @@ Apps like ESPN, Roku, and Samsung TV show you data, but they don't have conversa
 
 ## 🛠️ How It Works
 
-Sport Suggest MCP provides Claude with two powerful tools that return rich, structured data. Claude then analyzes this data conversationally to understand what YOU want to watch.
+Sport Suggest MCP provides Claude with three powerful tools that return rich, structured data. Claude then analyzes this data conversationally to understand what YOU want to watch.
 
 ### 1. `get_nfl_scores` - Live & Upcoming NFL Games
 
@@ -131,6 +131,33 @@ Returns all live and upcoming NBA games with comprehensive context.
 - "What's the best rivalry game?" → Combines team quality with competitiveness
 - "Where can I watch Lakers games?" → Returns broadcast info
 
+---
+
+### 3. `get_nba_rosters` - Current NBA Team Rosters ✨ NEW
+
+Returns up-to-date rosters for all NBA teams with complete player information.
+
+**Rich data includes:**
+
+- **Complete rosters:** All players for every NBA team
+- **Player details:** Jersey numbers and positions
+- **Always current:** Reflects latest trades, signings, and roster moves
+
+**Why this matters:**
+
+NBA rosters change constantly through trades, free agency, and signings. Claude's training data becomes outdated quickly. This tool ensures Claude always has the most current information about which players are on which teams.
+
+**What Claude can answer with this:**
+
+- "Which game has the best players?" → Checks current rosters to find star matchups
+- "Is LeBron playing tonight?" → Verifies current team roster
+- "Show me a game with good young talent" → Identifies rising stars on current rosters
+- "Which teams have the most All-Stars?" → Analyzes roster quality
+
+**How it works:**
+
+When you ask about players or star power, Claude automatically checks current rosters before making recommendations. This ensures accuracy even when major roster moves have happened since Claude's training data cutoff.
+
 ## 🎯 The Personalization Magic
 
 The key insight: **We don't hardcode recommendations.** Instead, we give Claude rich data and let it reason conversationally about what YOU want.
@@ -149,6 +176,9 @@ The key insight: **We don't hardcode recommendations.** Instead, we give Claude 
 **User says:** "I want to watch good teams"  
 **Claude reasons:** _Both teams have winning records (>0.500) = quality matchup_
 
+**User says:** "Which game has the most star power?"  
+**Claude reasons:** _[Checks rosters] → Identifies games with multiple All-Stars and MVP-caliber players_
+
 This approach is infinitely flexible - as your preferences evolve in the conversation, Claude adapts without any code changes.
 
 ## 🏗️ Project Structure
@@ -159,7 +189,7 @@ sport-suggest-mcp/
 │   └── sport_suggest_mcp/
 │       ├── __init__.py
 │       ├── server.py           # MCP server setup & tool registration
-│       └── tools.py            # get_nfl_scores & get_nba_scores implementations
+│       └── tools.py            # get_nfl_scores, get_nba_scores, get_nba_rosters
 ├── pyproject.toml              # Python project configuration
 └── README.md
 ```
@@ -180,6 +210,13 @@ https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard
 https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard
 ```
 
+**NBA Team Rosters:**
+
+```
+https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams
+https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/{team_id}/roster
+```
+
 **Data returned includes:**
 
 - Live scores and game status (quarter, time remaining)
@@ -187,6 +224,7 @@ https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard
 - Statistical leaders (top performers for each team)
 - Venue and broadcast details
 - Quarter-by-quarter scoring breakdowns
+- Complete team rosters with player positions and jersey numbers
 
 ## 🚀 Getting Started
 
@@ -251,12 +289,14 @@ Restart Claude Desktop, and you're ready to start discovering games!
 - "Find me a high-paced game"
 - "I want to watch a competitive game"
 
-### Player-Focused
+### Player-Focused ✨ Enhanced with Roster Data
 
 - "Any star performances happening?"
-- "Who's having a monster game?"
+- "Which game has the best players?" ← Uses current rosters
 - "Show me games with great QB play"
+- "Which NBA game should I watch for star power?" ← Uses current rosters
 - "Are there any players going off right now?"
+- "Is Giannis playing tonight?" ← Checks current roster
 
 ### Team-Based
 
@@ -270,6 +310,7 @@ Restart Claude Desktop, and you're ready to start discovering games!
 - "What NFL games are coming up tonight?"
 - "What should I watch this weekend?"
 - "When does the Lakers game start?"
+- "Which upcoming game has the most star power?" ← Uses current rosters
 
 ## 🗺️ Development Roadmap
 
@@ -279,11 +320,14 @@ Restart Claude Desktop, and you're ready to start discovering games!
 - [x] ESPN API client with NFL & NBA support
 - [x] `get_nfl_scores` with rich player/game data
 - [x] `get_nba_scores` with rich player/game data
+- [x] `get_nba_rosters` with current roster information
 - [x] Filtering out completed games
 - [x] Real-time player performance tracking
+- [x] Automatic roster checking for star player recommendations
 
 ### 🚧 Phase 2: Enhanced Intelligence (In Progress)
 
+- [ ] Add `get_nfl_rosters` for current NFL rosters
 - [ ] Add playoff implications detection
 - [ ] Team momentum indicators (recent win/loss streaks)
 - [ ] Injury impact analysis
@@ -309,9 +353,17 @@ Restart Claude Desktop, and you're ready to start discovering games!
 
 We don't build rigid recommendation algorithms. Instead:
 
-1. **We provide rich data** - scores, player stats, pace metrics, team records
+1. **We provide rich data** - scores, player stats, pace metrics, team records, **current rosters**
 2. **Claude analyzes conversationally** - "This game is close AND has a high pace AND features star performers"
 3. **Recommendations feel natural** - like talking to a knowledgeable friend, not querying a database
+
+### Always Use Fresh Data
+
+Sports rosters change constantly. Rather than relying on Claude's training data:
+
+- **Automatic roster checking** - Claude queries current rosters when discussing players
+- **Trade-proof recommendations** - Always accurate even after major roster moves
+- **No manual updates needed** - Roster data is fetched live from ESPN's API
 
 ### Data-Driven But Not Prescriptive
 
@@ -320,6 +372,7 @@ Every game includes enough context for Claude to make intelligent recommendation
 - **Stakes:** Team records, conference games
 - **Style:** Pace metrics, scoring patterns, defensive vs offensive battles
 - **Talent:** Player performance leaders (QB/RB/WR for NFL, PTS/REB/AST for NBA)
+- **Roster Quality:** Current team rosters with star players identified
 - **Timing:** Quarter/time remaining, halftime, upcoming
 - **Accessibility:** Broadcast channel, venue, attendance
 
@@ -332,13 +385,14 @@ Instead of profile settings, preferences emerge naturally through dialogue:
 - "I love defense" → Claude prioritizes low-pace, close games
 - "I'm a casual fan" → Claude explains context and storylines
 - "I only have 20 minutes" → Claude finds games in the 4th quarter
-- "Show me star power" → Claude highlights games with top statistical performances
+- "Show me star power" → Claude checks rosters and highlights top-tier matchups
 
 ## 📊 Success Metrics
 
 - ✅ Recommend a relevant game in <2 seconds
-- ✅ Understand conversational preferences ("exciting", "close", "high-scoring")
+- ✅ Understand conversational preferences ("exciting", "close", "high-scoring", "star power")
 - ✅ Handle NFL and NBA reliably with live data
+- ✅ Always use current rosters for player-based recommendations
 - ✅ Gracefully explain when nothing interesting is on
 - ✅ Feel like talking to a knowledgeable sports friend
 
@@ -351,14 +405,14 @@ Instead of profile settings, preferences emerge naturally through dialogue:
 - Fast development iteration
 - Easy integration with MCP Python SDK
 
-### Why Two Separate Tools?
+### Why Three Separate Tools?
 
-We initially considered a single `get_league_scores(league)` router function, but decided on separate `get_nfl_scores()` and `get_nba_scores()` tools because:
+We use `get_nfl_scores()`, `get_nba_scores()`, and `get_nba_rosters()` as separate tools because:
 
 1. **Simpler for Claude** - Direct function calls vs parameter passing
-2. **Sport-specific logic** - NFL uses QB/RB/WR leaders, NBA uses PTS/REB/AST
-3. **Easier to extend** - Add `get_mlb_scores()` later without touching existing code
-4. **Better performance** - No unnecessary routing layer
+2. **Sport-specific logic** - NFL uses QB/RB/WR leaders, NBA uses PTS/REB/AST, rosters are NBA-specific
+3. **Performance** - Only fetch rosters when needed for player-based queries
+4. **Easier to extend** - Add `get_nfl_rosters()` or `get_mlb_scores()` later without touching existing code
 
 ### Data Parsing Strategy
 
@@ -377,13 +431,28 @@ away_team.get("leaders", [])  # Away team players
 home_team.get("leaders", [])  # Home team players
 ```
 
+**NBA Rosters:** Flat array structure
+
+```python
+roster_data.get("athletes", [])  # All players in single array
+```
+
 Our tool functions handle these differences internally, presenting clean, consistent data to Claude.
+
+### Ensuring Fresh Roster Data
+
+The `get_nba_rosters` tool description includes explicit instructions to Claude:
+
+> **CRITICAL: You MUST call this tool before recommending any NBA games based on players or answering questions about which players are on which teams.** Your training data is outdated - players change teams through trades and free agency. This tool provides the only reliable source for current rosters.
+
+This ensures Claude always checks rosters rather than relying on potentially outdated training data.
 
 ## 🐛 Known Issues & Limitations
 
 - **Attendance data is unreliable** - ESPN doesn't always populate it, even for live games
 - **Halftime detection** - Some edge cases during halftime transitions
 - **Season stats vs game stats** - For upcoming games, API sometimes returns season totals instead of game stats (we filter these out)
+- **NFL rosters not yet implemented** - Currently only NBA has roster checking
 
 ## 📚 Resources
 
@@ -401,6 +470,7 @@ Contributions welcome! This is a learning project exploring the intersection of 
 
 **Ideas we'd love help with:**
 
+- NFL roster tool implementation
 - Additional sports (MLB, NHL, soccer)
 - Better playoff implications detection using standings data
 - Injury impact analysis
