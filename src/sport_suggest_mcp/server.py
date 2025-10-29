@@ -26,13 +26,13 @@ async def list_tools() -> list[Tool]:
     Returns JSON containing:
     • games: All live/upcoming games with teams, records, scores, broadcast, venue
       - Each game now includes matchup_injuries with detailed injury reports for both teams
-    • player_rankings: Top 50 players ranked by ESPN Rating (higher = better)
+    • player_rankings: Top 25 players ranked by ESPN Rating (higher = better)
     • team_rosters: Complete rosters with injury status for each player
     
     CRITICAL - INJURY CHECK WORKFLOW:
     1. Each game object contains a "matchup_injuries" field with current injury data
     2. Check matchup_injuries to see which players are Out/Questionable for that specific game
-    3. Cross-reference with player_rankings to see if any top-50 stars are injured
+    3. Cross-reference with player_rankings to see if any top-25 stars are injured
     4. Only recommend games where the star players are healthy
     
     **DO NOT recommend a game and then correct yourself. Check injuries FIRST.**
@@ -89,7 +89,7 @@ async def list_tools() -> list[Tool]:
             name="get_nba_player_rankings",
             description="""Get current NBA player rankings using ESPN's official rating system.
             
-            Returns top 50 players with:
+            Returns top 25 players with:
             - Player name
             - Team abbreviation
             - ESPN Rating (composite score of offensive/defensive performance)
