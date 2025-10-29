@@ -3,7 +3,12 @@ import sys
 from mcp.server import Server
 from mcp.types import Tool, TextContent
 from mcp.server.stdio import stdio_server
-from .tools import get_nba_scores, get_nba_rosters, get_nba_player_rankings
+from .tools import (
+    get_nba_scores,
+    get_nba_rosters,
+    get_nba_player_rankings,
+    get_nba_recommendation_data,
+)
 
 print("Starting sport-suggest-mcp server...", file=sys.stderr, flush=True)
 
@@ -15,24 +20,47 @@ async def list_tools() -> list[Tool]:
     """Return available tools."""
     return [
         Tool(
-            name="get_nba_scores",
-            description="""Get current NBA scores and upcoming games with basic information.
-            
-            Returns for each game:
-            - Team names and records (e.g., "Lakers (5-2)")
-            - Current score (for live games)
-            - Game status (upcoming time, live quarter/clock, halftime)
-            - Broadcast channels
-            - Venue
-            
-            This tool provides RAW DATA only. Use your intelligence to:
-            - Cross-reference with get_nba_player_rankings() to identify star matchups
-            - Compare team records to assess competitiveness
-            - Evaluate broadcast quality (national vs regional)
-            - Consider game timing for user convenience
-            - Make personalized recommendations based on user preferences
-            
-            When recommending games, call get_nba_player_rankings() first to know which players are elite, then use get_nba_rosters() to see which stars are playing in each game.""",
+            name="get_nba_recommendation_data",
+            description="""Get comprehensive NBA data for making game recommendations.
+    
+    Returns JSON containing:
+    • games: All live/upcoming games with teams, records, scores, broadcast, venue
+      - Each game now includes matchup_injuries with detailed injury reports for both teams
+    • player_rankings: Top 50 players ranked by ESPN Rating (higher = better)
+    • team_rosters: Complete rosters with injury status for each player
+    
+    CRITICAL - INJURY CHECK WORKFLOW:
+    1. Each game object contains a "matchup_injuries" field with current injury data
+    2. Check matchup_injuries to see which players are Out/Questionable for that specific game
+    3. Cross-reference with player_rankings to see if any top-50 stars are injured
+    4. Only recommend games where the star players are healthy
+    
+    **DO NOT recommend a game and then correct yourself. Check injuries FIRST.**
+    
+    Each injury in matchup_injuries includes:
+    - player_name: Full name of injured player
+    - team: Team abbreviation
+    - position: Player position
+    - status: "Out", "Questionable", "Day-To-Day", etc.
+    - injury_type: Type of injury (e.g., "Knee", "Ankle")
+    - return_date: Expected return date (YYYY-MM-DD format)
+    - short_description: Brief injury update
+    - long_description: Detailed injury context
+    
+    Example workflow:
+    - Game: LAL @ MIN
+    - Check matchup_injuries for this game
+    - See: Luka Doncic (LAL) - Status: "Out", Return: "2025-11-05"
+    - Cross-check: Luka is ranked #1 in player_rankings
+    - Result: Lakers missing their top star - consider a different game
+    
+    Additional factors for recommendations:
+    - Competitive balance: Compare team records for close matchups
+    - Broadcast quality: National channels (ESPN, TNT, ABC) > regional
+    - Game timing: Consider user's time zone preferences
+    
+    The data is rich enough to support any recommendation style - star power, competitiveness, 
+    broadcast quality, or any combination the user requests.""",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -41,20 +69,16 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="get_nba_rosters",
-            description="""Get current rosters for all NBA teams (cached, refreshes every 24 hours).
+            description="""Get current rosters for all NBA teams with injury information (cached, refreshes every 24 hours).
             
-            Returns complete player lists with positions and jersey numbers for all 30 NBA teams.
+            Returns complete player lists with positions, jersey numbers, and injury status for all 30 NBA teams.
             
             Use this when:
-            - User asks about specific players ("Is LeBron on the Lakers?", "Show me the Celtics roster")
-            - You need to check which elite players (from get_nba_player_rankings) are on teams playing today
-            - User wants to see team rosters independently of game information
+            - User asks specifically about team rosters ("Show me the Celtics roster")
+            - User asks about a specific player's team ("Is LeBron on the Lakers?")
+            - User asks about injuries ("Who's injured on the Lakers?")
             
-            To identify star matchups:
-            1. Call get_nba_player_rankings() to see top 50 players
-            2. Call get_nba_scores() to see today's games
-            3. Call get_nba_rosters() to cross-reference which stars are on which teams
-            4. Make intelligent recommendation""",
+            For recommendations, use get_nba_recommendation_data() instead - it includes rosters plus everything else!""",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -70,19 +94,11 @@ async def list_tools() -> list[Tool]:
             - Team abbreviation
             - ESPN Rating (composite score of offensive/defensive performance)
             
-            This represents ESPN's authoritative ranking of the best players RIGHT NOW based on current season performance.
+            Use this when:
+            - User asks specifically about player rankings ("Who are the best players this season?")
+            - User wants to know how a specific player ranks
             
-            Use this to:
-            - Identify which players are elite/stars this season
-            - Find games with top talent when user asks for "star power"
-            - Cross-reference with rosters to see which stars are playing tonight
-            - Provide context on player quality when discussing games
-            
-            Typical workflow for game recommendations:
-            1. Call this tool to see who the best players are
-            2. Call get_nba_scores() to see today's games  
-            3. Call get_nba_rosters() to match stars to teams
-            4. Recommend games with the most top-50 players""",
+            For recommendations, use get_nba_recommendation_data() instead - it includes rankings plus everything else!""",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -95,7 +111,11 @@ async def list_tools() -> list[Tool]:
 @server.call_tool()
 async def call_tool(name: str, arguments: dict) -> list[TextContent]:
     """Call a tool."""
-    if name == "get_nba_scores":
+    if name == "get_nba_recommendation_data":
+        result = get_nba_recommendation_data()
+        return [TextContent(type="text", text=result)]
+
+    elif name == "get_nba_scores":
         result = get_nba_scores()
         return [TextContent(type="text", text=result)]
 
